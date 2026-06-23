@@ -49,6 +49,25 @@ a:hover {
   background-color: #1d4ed8;
 }
 
+.btn-secondary {
+  background-color: #e2e8f0;
+  color: #172033;
+  border-color: #cbd5e1;
+}
+
+.btn-secondary:hover {
+  background-color: #cbd5e1;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
 .form-group {
   margin-bottom: 15px;
 }
@@ -169,4 +188,51 @@ tr:hover {
 
 .page-header h2 {
   margin: 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.detail-image img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+}
+
+.detail-info h3 {
+  margin-top: 0;
+}
+
+.detail-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.detail-info li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-info strong {
+  display: inline-block;
+  width: 150px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.text-danger {
+  color: #dc2626;
 }

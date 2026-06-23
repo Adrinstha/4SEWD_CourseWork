@@ -17,5 +17,81 @@
         <li><a href="index.html">Log Out</a></li>
       </ul>
     </nav>
+    <div class="container">
+      <div class="page-header">
+        <h2>Supplier Directory</h2>
+        <a href="supplier-form.html" class="btn btn-primary">+ Add Supplier</a>
+      </div>
+
+      <div class="filter-section">
+        <form action="suppliers.html" method="GET" class="filter-form">
+          <input
+            class="form-control filter-search-input"
+            type="search"
+            name="search"
+            placeholder="Search suppliers..."
+          />
+          <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Supplier Name</th>
+            <th>Contact Email</th>
+            <th>Phone Number</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TechSource Nepal</strong></td>
+            <td>sales@techsource.example</td>
+            <td>+977 1 555 0101</td>
+            <td>
+              <a href="supplier-form.html">Edit</a> |
+              <a href="#" class="text-danger">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Office Hub</strong></td>
+            <td>orders@officehub.example</td>
+            <td>+977 1 555 0194</td>
+            <td>
+              <a href="supplier-form.html">Edit</a> |
+              <a href="#" class="text-danger">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Digital Traders</strong></td>
+            <td>contact@digitaltraders.example</td>
+            <td>+977 9800 111 222</td>
+            <td>
+              <a href="supplier-form.html">Edit</a> |
+              <a href="#" class="text-danger">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Workspace Nepal</strong></td>
+            <td>hello@workspace.example</td>
+            <td>+977 9800 333 444</td>
+            <td>
+              <a href="supplier-form.html">Edit</a> |
+              <a href="#" class="text-danger">Delete</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <p>Showing 1-4 of 4 suppliers</p>
+        <div>
+          <a href="#" class="btn btn-secondary">&lt; Previous</a>
+          <a href="#" class="btn btn-primary">1</a>
+          <a href="#" class="btn btn-secondary">Next &gt;</a>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
