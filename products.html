@@ -3,104 +3,122 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Products</title>
+    <title>Products - StockFlow Inventory</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <nav class="navbar">
-      <h1><a href="products.html">StockFlow Inventory</a></h1>
+      <h1><a href="products.html">StockFlow</a></h1>
       <ul class="nav-links">
-        <li><a href="products.html">Products</a></li>
-        <li><a href="product-form.html">Add Product</a></li>
-        <li><a href="suppliers.html">Suppliers</a></li>
-        <li><a href="supplier-form.html">Add Supplier</a></li>
-        <li><a href="index.html">Log Out</a></li>
+        <li><a class="nav-link active" href="products.html">Products</a></li>
+        <li><a class="nav-link" href="product-form.html">Add Product</a></li>
+        <li><a class="nav-link" href="suppliers.html">Suppliers</a></li>
+        <li><a class="nav-link" href="supplier-form.html">Add Supplier</a></li>
+        <li><a class="nav-link" href="index.html">Log Out</a></li>
       </ul>
     </nav>
     <div class="container">
-    <div class="page-header">
-      <h2>Product Inventory</h2>
-      <a href="product-form.html" class="btn btn-primary">+ Add Product</a>
+      <div class="page-header">
+        <h2>Product Inventory</h2>
+        <a href="product-form.html" class="btn btn-primary">+ Add Product</a>
+      </div>
+      <div class="filter-section">
+        <form action="products.html" method="GET" class="filter-form">
+          <input
+            class="form-control filter-search-input"
+            type="search"
+            name="search"
+            placeholder="Search products..."
+          />
+          <select class="form-control filter-select" name="supplier">
+            <option value="">All Suppliers</option>
+            <option>TechSource Nepal</option>
+            <option>Office Hub</option>
+            <option>Digital Traders</option>
+          </select>
+          <button type="submit" class="btn btn-secondary">Filter</button>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Supplier</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ProBook Laptop</strong></td>
+              <td>TechSource Nepal</td>
+              <td>$899.00</td>
+              <td>24 <span class="badge badge-success">In Stock</span></td>
+              <td>
+                <div class="actions-cell">
+                  <a href="product-view.html">View</a>
+                  <a href="product-form.html">Edit</a>
+                  <a href="#" class="text-danger">Delete</a>
+                </div>
+              </td>
+            </tr>
+            <tr class="low-stock">
+              <td><strong>Wireless Mouse</strong></td>
+              <td>Office Hub</td>
+              <td>$28.50</td>
+              <td>3 <span class="badge badge-danger">Low Stock</span></td>
+              <td>
+                <div class="actions-cell">
+                  <a href="product-view.html">View</a>
+                  <a href="product-form.html">Edit</a>
+                  <a href="#" class="text-danger">Delete</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Mechanical Keyboard</strong></td>
+              <td>Digital Traders</td>
+              <td>$74.00</td>
+              <td>18 <span class="badge badge-success">In Stock</span></td>
+              <td>
+                <div class="actions-cell">
+                  <a href="product-view.html">View</a>
+                  <a href="product-form.html">Edit</a>
+                  <a href="#" class="text-danger">Delete</a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>USB Headset</strong></td>
+              <td>TechSource Nepal</td>
+              <td>$52.00</td>
+              <td>11 <span class="badge badge-success">In Stock</span></td>
+              <td>
+                <div class="actions-cell">
+                  <a href="product-view.html">View</a>
+                  <a href="product-form.html">Edit</a>
+                  <a href="#" class="text-danger">Delete</a>
+                </div>
+              </td>
+            </tr>
+            <tr class="low-stock">
+              <td><strong>Smartphone X2</strong></td>
+              <td>Digital Traders</td>
+              <td>$620.00</td>
+              <td>2 <span class="badge badge-danger">Low Stock</span></td>
+              <td>
+                <div class="actions-cell">
+                  <a href="product-view.html">View</a>
+                  <a href="product-form.html">Edit</a>
+                  <a href="#" class="text-danger">Delete</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="filter-section">
-      <form action="products.html" method="GET" class="filter-form">
-        <input class="form-control filter-search-input" type="search" name="search" placeholder="Search products...">
-        <select class="form-control filter-select" name="supplier">
-          <option value="">All Suppliers</option>
-          <option>TechSource Nepal</option>
-          <option>Office Hub</option>
-          <option>Digital Traders</option>
-        </select>
-        <button type="submit" class="btn btn-secondary">Filter</button>
-      </form>
-    </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Supplier</th>
-          <th>Price</th>
-          <th>Quantity</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>ProBook Laptop</strong></td>
-          <td>TechSource Nepal</td>
-          <td>$899.00</td>
-          <td>24</td>
-          <td>
-            <a href="product-view.html">View</a> | 
-            <a href="product-form.html">Edit</a> | 
-            <a href="#" class="text-danger">Delete</a>
-          </td>
-        </tr>
-        <tr class="low-stock">
-          <td><strong>Wireless Mouse</strong></td>
-          <td>Office Hub</td>
-          <td>$28.50</td>
-          <td>3 (Low Stock)</td>
-          <td>
-            <a href="product-view.html">View</a> | 
-            <a href="product-form.html">Edit</a> | 
-            <a href="#" class="text-danger">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>Mechanical Keyboard</strong></td>
-          <td>Digital Traders</td>
-          <td>$74.00</td>
-          <td>18</td>
-          <td>
-            <a href="product-view.html">View</a> | 
-            <a href="product-form.html">Edit</a> | 
-            <a href="#" class="text-danger">Delete</a>
-          </td>
-        </tr>
-        <tr>
-          <td><strong>USB Headset</strong></td>
-          <td>TechSource Nepal</td>
-          <td>$52.00</td>
-          <td>11</td>
-          <td>
-            <a href="product-view.html">View</a> | 
-            <a href="product-form.html">Edit</a> | 
-            <a href="#" class="text-danger">Delete</a>
-          </td>
-        </tr>
-        <tr class="low-stock">
-          <td><strong>Smartphone X2</strong></td>
-          <td>Digital Traders</td>
-          <td>$620.00</td>
-          <td>2 (Low Stock)</td>
-          <td>
-            <a href="product-view.html">View</a> | 
-            <a href="product-form.html">Edit</a> | 
-            <a href="#" class="text-danger">Delete</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </body>
 </html>

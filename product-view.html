@@ -3,24 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>View Product</title>
+    <title>View Product - StockFlow Inventory</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <nav class="navbar">
-      <h1><a href="products.html">StockFlow Inventory</a></h1>
+      <h1><a href="products.html">StockFlow</a></h1>
       <ul class="nav-links">
-        <li><a href="products.html">Products</a></li>
-        <li><a href="product-form.html">Add Product</a></li>
-        <li><a href="suppliers.html">Suppliers</a></li>
-        <li><a href="supplier-form.html">Add Supplier</a></li>
-        <li><a href="index.html">Log Out</a></li>
+        <li><a class="nav-link" href="products.html">Products</a></li>
+        <li><a class="nav-link" href="product-form.html">Add Product</a></li>
+        <li><a class="nav-link" href="suppliers.html">Suppliers</a></li>
+        <li><a class="nav-link" href="supplier-form.html">Add Supplier</a></li>
+        <li><a class="nav-link" href="index.html">Log Out</a></li>
       </ul>
     </nav>
     <div class="container">
       <div class="page-header">
         <h2>Product Details</h2>
-        <div>
+        <div class="header-actions">
           <a href="products.html" class="btn btn-secondary">&lt; Back</a>
           <a href="product-form.html" class="btn btn-primary">Edit Product</a>
         </div>
@@ -35,11 +35,26 @@
           <p>A reliable laptop for daily administrative and business tasks.</p>
 
           <ul>
-            <li><strong>SKU:</strong> PB-1002</li>
-            <li><strong>Price:</strong> $899.00</li>
-            <li><strong>Available:</strong> 24 units</li>
-            <li><strong>Supplier:</strong> TechSource Nepal</li>
-            <li><strong>Last Updated:</strong> June 22, 2026</li>
+            <li>
+              <strong>SKU:</strong>
+              <span>PB-1002</span>
+            </li>
+            <li>
+              <strong>Price:</strong>
+              <span class="text-success">$899.00</span>
+            </li>
+            <li>
+              <strong>Available:</strong>
+              <span>24 units <span class="badge badge-success badge-indent">In Stock</span></span>
+            </li>
+            <li>
+              <strong>Supplier:</strong>
+              <span>TechSource Nepal</span>
+            </li>
+            <li>
+              <strong>Last Updated:</strong>
+              <span>June 22, 2026</span>
+            </li>
           </ul>
         </div>
       </div>
