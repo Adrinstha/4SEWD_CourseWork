@@ -7,35 +7,35 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <nav class="navbar">
+    <nav class="nav">
       <h1><a href="products.html">StockFlow</a></h1>
-      <ul class="nav-links">
-        <li><a class="nav-link" href="products.html">Products</a></li>
-        <li><a class="nav-link" href="product-form.html">Add Product</a></li>
-        <li><a class="nav-link active" href="suppliers.html">Suppliers</a></li>
-        <li><a class="nav-link" href="supplier-form.html">Add Supplier</a></li>
-        <li><a class="nav-link" href="index.html">Log Out</a></li>
+      <ul class="links">
+        <li><a class="link" href="products.html">Products</a></li>
+        <li><a class="link" href="product-form.html">Add Product</a></li>
+        <li><a class="link active" href="suppliers.html">Suppliers</a></li>
+        <li><a class="link" href="supplier-form.html">Add Supplier</a></li>
+        <li><a class="link" href="index.html">Log Out</a></li>
       </ul>
     </nav>
     <div class="container">
-      <div class="page-header">
+      <div class="header">
         <h2>Supplier Directory</h2>
-        <a href="supplier-form.html" class="btn btn-primary">+ Add Supplier</a>
+        <a href="supplier-form.html" class="btn primary">+ Add Supplier</a>
       </div>
 
-      <div class="filter-section">
-        <form action="suppliers.html" method="GET" class="filter-form">
+      <div class="filters">
+        <form action="suppliers.html" method="GET" class="form">
           <input
-            class="form-control filter-search-input"
+            class="input search"
             type="search"
             name="search"
             placeholder="Search suppliers..."
           />
-          <button type="submit" class="btn btn-secondary">Search</button>
+          <button type="submit" class="btn secondary">Search</button>
         </form>
       </div>
 
-      <div class="table-responsive">
+      <div class="table">
         <table>
           <thead>
             <tr>
@@ -51,9 +51,9 @@
               <td>sales@techsource.example</td>
               <td>+977 1 555 0101</td>
               <td>
-                <div class="actions-cell">
+                <div class="actions">
                   <a href="supplier-form.html">Edit</a>
-                  <a href="#" class="text-danger">Delete</a>
+                  <a href="#" class="red">Delete</a>
                 </div>
               </td>
             </tr>
@@ -62,9 +62,9 @@
               <td>orders@officehub.example</td>
               <td>+977 1 555 0194</td>
               <td>
-                <div class="actions-cell">
+                <div class="actions">
                   <a href="supplier-form.html">Edit</a>
-                  <a href="#" class="text-danger">Delete</a>
+                  <a href="#" class="red">Delete</a>
                 </div>
               </td>
             </tr>
@@ -73,9 +73,9 @@
               <td>contact@digitaltraders.example</td>
               <td>+977 9800 111 222</td>
               <td>
-                <div class="actions-cell">
+                <div class="actions">
                   <a href="supplier-form.html">Edit</a>
-                  <a href="#" class="text-danger">Delete</a>
+                  <a href="#" class="red">Delete</a>
                 </div>
               </td>
             </tr>
@@ -84,9 +84,9 @@
               <td>hello@workspace.example</td>
               <td>+977 9800 333 444</td>
               <td>
-                <div class="actions-cell">
+                <div class="actions">
                   <a href="supplier-form.html">Edit</a>
-                  <a href="#" class="text-danger">Delete</a>
+                  <a href="#" class="red">Delete</a>
                 </div>
               </td>
             </tr>
@@ -94,12 +94,12 @@
         </table>
       </div>
 
-      <div class="pagination">
+      <div class="pages">
         <p>Showing 1-4 of 4 suppliers</p>
-        <div class="pagination-buttons">
-          <a href="#" class="btn btn-secondary">&lt; Previous</a>
-          <a href="#" class="btn btn-primary pagination-active-btn">1</a>
-          <a href="#" class="btn btn-secondary">Next &gt;</a>
+        <div class="buttons">
+          <a href="#" class="btn secondary">&lt; Previous</a>
+          <a href="#" class="btn primary page">1</a>
+          <a href="#" class="btn secondary">Next &gt;</a>
         </div>
       </div>
     </div>

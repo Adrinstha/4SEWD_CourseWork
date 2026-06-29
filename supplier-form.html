@@ -7,44 +7,44 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <nav class="navbar">
+    <nav class="nav">
       <h1><a href="products.html">StockFlow</a></h1>
-      <ul class="nav-links">
-        <li><a class="nav-link" href="products.html">Products</a></li>
-        <li><a class="nav-link" href="product-form.html">Add Product</a></li>
-        <li><a class="nav-link" href="suppliers.html">Suppliers</a></li>
-        <li><a class="nav-link active" href="supplier-form.html">Add Supplier</a></li>
-        <li><a class="nav-link" href="index.html">Log Out</a></li>
+      <ul class="links">
+        <li><a class="link" href="products.html">Products</a></li>
+        <li><a class="link" href="product-form.html">Add Product</a></li>
+        <li><a class="link" href="suppliers.html">Suppliers</a></li>
+        <li><a class="link active" href="supplier-form.html">Add Supplier</a></li>
+        <li><a class="link" href="index.html">Log Out</a></li>
       </ul>
     </nav>
-    <div class="container container-sm">
-      <div class="form-card">
+    <div class="container small">
+      <div class="card">
         <h2>Add New Supplier</h2>
-        <p class="text-muted-desc">
+        <p class="desc">
           Please enter the supplier details below.
         </p>
 
         <form action="suppliers.html" method="GET">
-          <div class="form-group">
-            <label for="supplier-name">
+          <div class="group">
+            <label for="name">
               Supplier Name <span class="required">*</span>
             </label>
             <input
-              class="form-control"
+              class="input"
               type="text"
-              id="supplier-name"
+              id="name"
               name="supplierName"
               placeholder="Enter company or supplier name"
               required
             />
           </div>
 
-          <div class="form-group">
+          <div class="group">
             <label for="email">
               Contact Email <span class="required">*</span>
             </label>
             <input
-              class="form-control"
+              class="input"
               type="email"
               id="email"
               name="email"
@@ -53,12 +53,12 @@
             />
           </div>
 
-          <div class="form-group">
+          <div class="group">
             <label for="phone">
               Phone Number <span class="required">*</span>
             </label>
             <input
-              class="form-control"
+              class="input"
               type="tel"
               id="phone"
               name="phone"
@@ -67,10 +67,10 @@
             />
           </div>
 
-          <div class="form-group">
+          <div class="group">
             <label for="notes">Notes (Optional)</label>
             <textarea
-              class="form-control"
+              class="input"
               id="notes"
               name="notes"
               placeholder="Enter optional delivery or payment terms"
@@ -78,9 +78,9 @@
             ></textarea>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save Supplier</button>
-            <a href="suppliers.html" class="btn btn-secondary">Cancel</a>
+          <div class="footer">
+            <button type="submit" class="btn primary">Save Supplier</button>
+            <a href="suppliers.html" class="btn secondary">Cancel</a>
           </div>
         </form>
       </div>
