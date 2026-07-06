@@ -535,3 +535,22 @@ tr.low td {
 .actions a:not(.red):hover {
   color: var(--primary-hover);
 }
+
+.alert-box {
+  background-color: var(--danger-light);
+  color: var(--danger);
+  border: 1px solid rgba(225, 29, 72, 0.2);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+.alert-box.success-alert {
+  background-color: var(--success-light);
+  color: var(--success);
+  border-color: rgba(13, 148, 136, 0.2);
+}
