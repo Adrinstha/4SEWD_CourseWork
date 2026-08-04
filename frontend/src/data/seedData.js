@@ -1,0 +1,71 @@
+export const initialSuppliers = [
+  {
+    id: "supplier-1",
+    name: "TechSource Nepal",
+    email: "sales@techsource.example",
+    phone: "+977 1 555 0101",
+    notes: "Primary supplier for computers and office technology.",
+  },
+  {
+    id: "supplier-2",
+    name: "Digital Traders",
+    email: "orders@digitaltraders.example",
+    phone: "+977 1 555 0102",
+    notes: "Supplier for computer accessories and peripherals.",
+  },
+  {
+    id: "supplier-3",
+    name: "Smart Electronics",
+    email: "contact@smartelectronics.example",
+    phone: "+977 1 555 0103",
+    notes: "Supplier for mobile phones and electronic equipment.",
+  },
+];
+
+export const initialProducts = [
+  {
+    id: "product-1",
+    name: "ProBook Laptop",
+    description: "Reliable business laptop for everyday office work.",
+    price: 899,
+    quantity: 24,
+    supplierId: "supplier-1",
+    image: "/assets/laptop.svg",
+  },
+  {
+    id: "product-2",
+    name: "Wireless Mouse",
+    description: "Comfortable wireless mouse with an ergonomic design.",
+    price: 29.99,
+    quantity: 8,
+    supplierId: "supplier-2",
+    image: "/assets/mouse.svg",
+  },
+  {
+    id: "product-3",
+    name: "Mechanical Keyboard",
+    description: "Mechanical keyboard designed for accurate typing.",
+    price: 79.99,
+    quantity: 0,
+    supplierId: "supplier-2",
+    image: "/assets/keyboard.svg",
+  },
+  {
+    id: "product-4",
+    name: "Office Headset",
+    description: "Noise-reducing headset for calls and online meetings.",
+    price: 54.5,
+    quantity: 17,
+    supplierId: "supplier-2",
+    image: "/assets/headset.svg",
+  },
+  {
+    id: "product-5",
+    name: "Smartphone",
+    description: "Modern smartphone for communication and business use.",
+    price: 649,
+    quantity: 11,
+    supplierId: "supplier-3",
+    image: "/assets/phone.svg",
+  },
+];
