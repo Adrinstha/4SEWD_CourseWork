@@ -26,7 +26,7 @@ function formatPrice(price) {
   }).format(price);
 }
 
-function ProductRow({ product, supplierName, onView, onEdit, onDelete }) {
+function ProductRow({ product, supplierName, isAdmin, onView, onEdit, onDelete }) {
   const stockStatus = getStockStatus(product.quantity);
 
   return (
@@ -67,21 +67,26 @@ function ProductRow({ product, supplierName, onView, onEdit, onDelete }) {
             View
           </button>
 
-          <button
-            className="button button--secondary button--small"
-            type="button"
-            onClick={() => onEdit && onEdit(product)}
-          >
-            Edit
-          </button>
+          {/* Admin only actions */}
+          {isAdmin && (
+            <>
+              <button
+                className="button button--secondary button--small"
+                type="button"
+                onClick={() => onEdit && onEdit(product)}
+              >
+                Edit
+              </button>
 
-          <button
-            className="button button--danger button--small"
-            type="button"
-            onClick={() => onDelete(product.id)}
-          >
-            Delete
-          </button>
+              <button
+                className="button button--danger button--small"
+                type="button"
+                onClick={() => onDelete && onDelete(product.id)}
+              >
+                Delete
+              </button>
+            </>
+          )}
         </div>
       </td>
     </tr>

@@ -16,19 +16,21 @@ function PageHeader({
         <p className="page-header__description">{description}</p>
       </div>
 
-      {onAction ? (
-        <button
-          className="button button--primary"
-          type="button"
-          onClick={onAction}
-        >
-          {actionLabel}
-        </button>
-      ) : (
-        <a className="button button--primary" href={actionHref}>
-          {actionLabel}
-        </a>
-      )}
+      {actionLabel && (onAction || actionHref) ? (
+        onAction ? (
+          <button
+            className="button button--primary"
+            type="button"
+            onClick={onAction}
+          >
+            {actionLabel}
+          </button>
+        ) : (
+          <a className="button button--primary" href={actionHref}>
+            {actionLabel}
+          </a>
+        )
+      ) : null}
     </div>
   );
 }

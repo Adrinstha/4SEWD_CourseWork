@@ -20,6 +20,17 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function signup(userData) {
+    setIsLoading(true);
+    try {
+      const user = await authService.signup(userData);
+      setCurrentUser(user);
+      return user;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   function logout() {
     authService.logout();
     setCurrentUser(null);
@@ -28,8 +39,10 @@ export function AuthProvider({ children }) {
   const value = {
     currentUser,
     isAuthenticated: Boolean(currentUser),
+    isAdmin: currentUser?.role === "admin",
     isLoading,
     login,
+    signup,
     logout,
   };
 

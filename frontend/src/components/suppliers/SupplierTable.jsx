@@ -1,6 +1,14 @@
 import SupplierRow from "./SupplierRow.jsx";
 
-function SupplierTable({ suppliers, sortField, sortDirection, onSort, onEdit, onDelete }) {
+function SupplierTable({
+  suppliers,
+  sortField,
+  sortDirection,
+  isAdmin,
+  onSort,
+  onEdit,
+  onDelete,
+}) {
   function renderSortIndicator(field) {
     if (sortField !== field) {
       return <span style={{ opacity: 0.35, marginLeft: "4px" }}>↕</span>;
@@ -41,6 +49,7 @@ function SupplierTable({ suppliers, sortField, sortDirection, onSort, onEdit, on
             <SupplierRow
               key={supplier.id}
               supplier={supplier}
+              isAdmin={isAdmin}
               onEdit={onEdit}
               onDelete={onDelete}
             />

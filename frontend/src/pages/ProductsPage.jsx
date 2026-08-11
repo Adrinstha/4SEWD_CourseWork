@@ -8,11 +8,14 @@ import ProductDetailModal from "../components/products/ProductDetailModal.jsx";
 import ProductForm from "../components/products/ProductForm.jsx";
 import ProductTable from "../components/products/ProductTable.jsx";
 import ProductToolbar from "../components/products/ProductToolbar.jsx";
+import { useAuth } from "../context/useAuth.js";
 import * as productService from "../services/productService.js";
 import { initializeDatabase } from "../services/seedService.js";
 import * as supplierService from "../services/supplierService.js";
 
 function ProductsPage() {
+  const { isAdmin } = useAuth();
+
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,7 +76,6 @@ function ProductsPage() {
 
   const filteredProducts = products.filter((product) => {
     const supplier = suppliers.find((item) => item.id === product.supplierId);
-
     const supplierName = supplier?.name ?? "";
 
     const matchesSearch =
@@ -91,6 +93,8 @@ function ProductsPage() {
     searchTerm.trim() !== "" || selectedSupplier !== "all";
 
   async function handleDelete(productId) {
+    if (!isAdmin) return;
+
     const productToDelete = products.find(
       (product) => product.id === productId,
     );
@@ -109,13 +113,10 @@ function ProductsPage() {
 
     try {
       setErrorMessage("");
-
       const updatedProducts = await productService.remove(productId);
-
       setProducts(updatedProducts);
     } catch (error) {
       console.error("Unable to delete product:", error);
-
       setErrorMessage("The product could not be deleted. Please try again.");
     }
   }
@@ -142,6 +143,7 @@ function ProductsPage() {
   }
 
   function handleOpenForm() {
+    if (!isAdmin) return;
     setEditingProduct(null);
     setIsFormVisible(true);
   }
@@ -152,6 +154,7 @@ function ProductsPage() {
   }
 
   function handleEditProduct(product) {
+    if (!isAdmin) return;
     setEditingProduct(product);
     setIsFormVisible(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -213,7 +216,6 @@ function ProductsPage() {
       return (
         <div className="status-message" role="status" aria-live="polite">
           <span className="loading-spinner" aria-hidden="true" />
-
           <p>Loading inventory...</p>
         </div>
       );
@@ -227,10 +229,11 @@ function ProductsPage() {
             suppliers={suppliers}
             sortField={sortField}
             sortDirection={sortDirection}
+            isAdmin={isAdmin}
             onSort={handleSort}
             onView={handleViewProduct}
-            onEdit={handleEditProduct}
-            onDelete={handleDelete}
+            onEdit={isAdmin ? handleEditProduct : undefined}
+            onDelete={isAdmin ? handleDelete : undefined}
           />
           <Pagination
             currentPage={currentPage}
@@ -261,9 +264,13 @@ function ProductsPage() {
     return (
       <EmptyState
         title="No products found"
-        message="Add your first product to begin managing your inventory."
-        actionLabel="Add product"
-        onAction={handleOpenForm}
+        message={
+          isAdmin
+            ? "Add your first product to begin managing your inventory."
+            : "No products are currently available in the inventory."
+        }
+        actionLabel={isAdmin ? "Add product" : undefined}
+        onAction={isAdmin ? handleOpenForm : undefined}
       />
     );
   }
@@ -291,15 +298,23 @@ function ProductsPage() {
         <PageHeader
           eyebrow="Inventory management"
           title="Products"
-          description="View and manage the products available in your inventory."
-          actionLabel={
-            isFormVisible
-              ? editingProduct
-                ? "Cancel edit"
-                : "Close form"
-              : "Add product"
+          description={
+            isAdmin
+              ? "View and manage the products available in your inventory."
+              : "View the products available in your inventory."
           }
-          onAction={isFormVisible ? handleCloseForm : handleOpenForm}
+          actionLabel={
+            isAdmin
+              ? isFormVisible
+                ? editingProduct
+                  ? "Cancel edit"
+                  : "Close form"
+                : "Add product"
+              : undefined
+          }
+          onAction={
+            isAdmin ? (isFormVisible ? handleCloseForm : handleOpenForm) : undefined
+          }
         />
 
         <div className="kpi-grid">
@@ -329,7 +344,7 @@ function ProductsPage() {
           />
         </div>
 
-        {isFormVisible && (
+        {isAdmin && isFormVisible && (
           <section
             className="content-panel product-form-panel"
             id="add-product"

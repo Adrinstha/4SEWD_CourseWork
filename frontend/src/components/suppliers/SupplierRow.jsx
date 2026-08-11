@@ -1,4 +1,4 @@
-function SupplierRow({ supplier, onEdit, onDelete }) {
+function SupplierRow({ supplier, isAdmin, onEdit, onDelete }) {
   return (
     <tr>
       <td>
@@ -22,21 +22,29 @@ function SupplierRow({ supplier, onEdit, onDelete }) {
 
       <td>
         <div className="table-actions">
-          <button
-            className="button button--secondary button--small"
-            type="button"
-            onClick={() => onEdit(supplier)}
-          >
-            Edit
-          </button>
+          {isAdmin ? (
+            <>
+              <button
+                className="button button--secondary button--small"
+                type="button"
+                onClick={() => onEdit && onEdit(supplier)}
+              >
+                Edit
+              </button>
 
-          <button
-            className="button button--danger button--small"
-            type="button"
-            onClick={() => onDelete(supplier.id)}
-          >
-            Delete
-          </button>
+              <button
+                className="button button--danger button--small"
+                type="button"
+                onClick={() => onDelete && onDelete(supplier.id)}
+              >
+                Delete
+              </button>
+            </>
+          ) : (
+            <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+              View Only
+            </span>
+          )}
         </div>
       </td>
     </tr>

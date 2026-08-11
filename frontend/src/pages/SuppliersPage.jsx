@@ -6,11 +6,14 @@ import Pagination from "../components/common/Pagination.jsx";
 import Navbar from "../components/layout/Navbar.jsx";
 import SupplierForm from "../components/suppliers/SupplierForm.jsx";
 import SupplierTable from "../components/suppliers/SupplierTable.jsx";
+import { useAuth } from "../context/useAuth.js";
 import * as productService from "../services/productService.js";
 import { initializeDatabase } from "../services/seedService.js";
 import * as supplierService from "../services/supplierService.js";
 
 function SuppliersPage() {
+  const { isAdmin } = useAuth();
+
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -74,6 +77,8 @@ function SuppliersPage() {
   );
 
   async function handleDelete(supplierId) {
+    if (!isAdmin) return;
+
     const supplierToDelete = suppliers.find((s) => s.id === supplierId);
     if (!supplierToDelete) return;
 
@@ -99,23 +104,31 @@ function SuppliersPage() {
       setSuccessMessage(`Supplier "${supplierToDelete.name}" deleted successfully.`);
     } catch (error) {
       console.error("Unable to delete supplier:", error);
-      setErrorMessage("Failed to delete supplier. Please try again.");
+      setErrorMessage("The supplier could not be deleted. Please try again.");
     }
   }
 
-  function handleSupplierSaved(savedSupplier) {
+  function handleSupplierSaved(updatedSupplier) {
     setSuppliers((prev) => {
-      const exists = prev.some((s) => s.id === savedSupplier.id);
+      const exists = prev.some((s) => s.id === updatedSupplier.id);
       if (exists) {
-        return prev.map((s) => (s.id === savedSupplier.id ? savedSupplier : s));
+        return prev.map((s) => (s.id === updatedSupplier.id ? updatedSupplier : s));
       }
-      return [...prev, savedSupplier];
+      return [...prev, updatedSupplier];
     });
+
+    setSuccessMessage(
+      editingSupplier
+        ? `Supplier "${updatedSupplier.name}" updated successfully.`
+        : `Supplier "${updatedSupplier.name}" added successfully.`,
+    );
+
     setIsFormVisible(false);
     setEditingSupplier(null);
   }
 
   function handleOpenForm() {
+    if (!isAdmin) return;
     setEditingSupplier(null);
     setIsFormVisible(true);
   }
@@ -126,6 +139,7 @@ function SuppliersPage() {
   }
 
   function handleEditSupplier(supplier) {
+    if (!isAdmin) return;
     setEditingSupplier(supplier);
     setIsFormVisible(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -142,8 +156,17 @@ function SuppliersPage() {
   }
 
   const sortedSuppliers = [...filteredSuppliers].sort((a, b) => {
-    let aVal = (a[sortField] || "").toLowerCase();
-    let bVal = (b[sortField] || "").toLowerCase();
+    let aVal = "",
+      bVal = "";
+    if (sortField === "name") {
+      aVal = a.name.toLowerCase();
+      bVal = b.name.toLowerCase();
+    } else if (sortField === "email") {
+      aVal = a.email.toLowerCase();
+      bVal = b.email.toLowerCase();
+    } else {
+      return 0;
+    }
 
     if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
     if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
@@ -173,9 +196,10 @@ function SuppliersPage() {
             suppliers={paginatedSuppliers}
             sortField={sortField}
             sortDirection={sortDirection}
+            isAdmin={isAdmin}
             onSort={handleSort}
-            onEdit={handleEditSupplier}
-            onDelete={handleDelete}
+            onEdit={isAdmin ? handleEditSupplier : undefined}
+            onDelete={isAdmin ? handleDelete : undefined}
           />
           <Pagination
             currentPage={currentPage}
@@ -196,7 +220,7 @@ function SuppliersPage() {
       return (
         <EmptyState
           title="No matching suppliers"
-          message="No suppliers match your search query."
+          message="No suppliers match the current search term."
           actionLabel="Clear search"
           onAction={() => setSearchTerm("")}
         />
@@ -206,9 +230,13 @@ function SuppliersPage() {
     return (
       <EmptyState
         title="No suppliers found"
-        message="Add your first supplier to begin."
-        actionLabel="Add supplier"
-        onAction={handleOpenForm}
+        message={
+          isAdmin
+            ? "Add your first supplier to begin."
+            : "No suppliers registered."
+        }
+        actionLabel={isAdmin ? "Add supplier" : undefined}
+        onAction={isAdmin ? handleOpenForm : undefined}
       />
     );
   }
@@ -227,15 +255,23 @@ function SuppliersPage() {
         <PageHeader
           eyebrow="Supplier management"
           title="Suppliers"
-          description="View and manage the suppliers supplying products to your inventory."
-          actionLabel={
-            isFormVisible
-              ? editingSupplier
-                ? "Cancel edit"
-                : "Close form"
-              : "Add supplier"
+          description={
+            isAdmin
+              ? "View and manage the suppliers supplying products to your inventory."
+              : "View the suppliers supplying products to your inventory."
           }
-          onAction={isFormVisible ? handleCloseForm : handleOpenForm}
+          actionLabel={
+            isAdmin
+              ? isFormVisible
+                ? editingSupplier
+                  ? "Cancel edit"
+                  : "Close form"
+                : "Add supplier"
+              : undefined
+          }
+          onAction={
+            isAdmin ? (isFormVisible ? handleCloseForm : handleOpenForm) : undefined
+          }
         />
 
         <div className="kpi-grid">
@@ -259,7 +295,7 @@ function SuppliersPage() {
           />
         </div>
 
-        {isFormVisible && (
+        {isAdmin && isFormVisible && (
           <section
             className="content-panel product-form-panel"
             id="add-supplier"

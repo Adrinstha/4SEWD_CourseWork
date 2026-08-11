@@ -5,6 +5,7 @@ function ProductTable({
   suppliers,
   sortField,
   sortDirection,
+  isAdmin,
   onSort,
   onView,
   onEdit,
@@ -63,6 +64,7 @@ function ProductTable({
               key={product.id}
               product={product}
               supplierName={getSupplierName(product.supplierId)}
+              isAdmin={isAdmin}
               onView={onView}
               onEdit={onEdit}
               onDelete={onDelete}
