@@ -14,7 +14,7 @@ export async function seedDatabase() {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
-  await sequelize.sync({ force: true });
+  await sequelize.sync();
   console.log("Database synchronized.");
 
   // Seed Users
