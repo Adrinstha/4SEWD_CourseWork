@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables (secrets)
+.env
+.env.local
+.env.*.local
+*.env
+
+# SQLite database & uploaded files
+server/storage/*.sqlite
+server/storage/uploads/*
+!server/storage/uploads/.gitkeep
+storage/*.sqlite
+storage/uploads/*
+
+# Build and distribution outputs
+dist/
+**/dist/
+build/
+.vite/
+
+# Archive files & OS generated files
+*.zip
+*.tar.gz
+*.log
+.DS_Store
+Thumbs.db
