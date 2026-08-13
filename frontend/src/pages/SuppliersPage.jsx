@@ -8,7 +8,6 @@ import SupplierForm from "../components/suppliers/SupplierForm.jsx";
 import SupplierTable from "../components/suppliers/SupplierTable.jsx";
 import { useAuth } from "../context/useAuth.js";
 import * as productService from "../services/productService.js";
-import { initializeDatabase } from "../services/seedService.js";
 import * as supplierService from "../services/supplierService.js";
 
 function SuppliersPage() {
@@ -28,39 +27,47 @@ function SuppliersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  function reloadSuppliersData() {
+    setIsLoading(true);
+    setErrorMessage("");
+    Promise.all([supplierService.getAll(), productService.getAll()])
+      .then(([storedSuppliers, storedProducts]) => {
+        setSuppliers(storedSuppliers);
+        setProducts(storedProducts);
+      })
+      .catch((error) => {
+        console.error("Unable to load suppliers:", error);
+        setErrorMessage(
+          "The suppliers list could not be loaded. Please ensure the backend server is running.",
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
   useEffect(() => {
     let ignore = false;
-
-    async function loadSuppliers() {
-      try {
-        setIsLoading(true);
-        setErrorMessage("");
-        await initializeDatabase();
-
-        const [storedSuppliers, storedProducts] = await Promise.all([
-          supplierService.getAll(),
-          productService.getAll(),
-        ]);
-
+    Promise.all([supplierService.getAll(), productService.getAll()])
+      .then(([storedSuppliers, storedProducts]) => {
         if (!ignore) {
           setSuppliers(storedSuppliers);
           setProducts(storedProducts);
         }
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Unable to load suppliers:", error);
         if (!ignore) {
           setErrorMessage(
-            "The suppliers list could not be loaded. Please refresh and try again.",
+            "The suppliers list could not be loaded. Please ensure the backend server is running.",
           );
         }
-      } finally {
+      })
+      .finally(() => {
         if (!ignore) {
           setIsLoading(false);
         }
-      }
-    }
-
-    loadSuppliers();
+      });
 
     return () => {
       ignore = true;
@@ -79,43 +86,31 @@ function SuppliersPage() {
   async function handleDelete(supplierId) {
     if (!isAdmin) return;
 
-    const supplierToDelete = suppliers.find((s) => s.id === supplierId);
+    const supplierToDelete = suppliers.find((s) => Number(s.id) === Number(supplierId));
     if (!supplierToDelete) return;
 
     setErrorMessage("");
     setSuccessMessage("");
 
+    const confirmed = window.confirm(
+      `Are you sure you want to delete supplier "${supplierToDelete.name}"?`,
+    );
+    if (!confirmed) return;
+
     try {
-      const hasProducts = await productService.hasProductsForSupplier(supplierId);
-      if (hasProducts) {
-        setErrorMessage(
-          `Cannot delete supplier "${supplierToDelete.name}": Products are currently assigned to this supplier. Reassign or remove those products first.`,
-        );
-        return;
-      }
-
-      const confirmed = window.confirm(
-        `Are you sure you want to delete supplier "${supplierToDelete.name}"?`,
-      );
-      if (!confirmed) return;
-
-      const updatedSuppliers = await supplierService.remove(supplierId);
-      setSuppliers(updatedSuppliers);
+      await supplierService.remove(supplierId);
       setSuccessMessage(`Supplier "${supplierToDelete.name}" deleted successfully.`);
+      reloadSuppliersData();
     } catch (error) {
       console.error("Unable to delete supplier:", error);
-      setErrorMessage("The supplier could not be deleted. Please try again.");
+      setErrorMessage(
+        error.message || "The supplier could not be deleted. Please check if products are attached.",
+      );
     }
   }
 
   function handleSupplierSaved(updatedSupplier) {
-    setSuppliers((prev) => {
-      const exists = prev.some((s) => s.id === updatedSupplier.id);
-      if (exists) {
-        return prev.map((s) => (s.id === updatedSupplier.id ? updatedSupplier : s));
-      }
-      return [...prev, updatedSupplier];
-    });
+    reloadSuppliersData();
 
     setSuccessMessage(
       editingSupplier
@@ -156,20 +151,20 @@ function SuppliersPage() {
   }
 
   const sortedSuppliers = [...filteredSuppliers].sort((a, b) => {
-    let aVal = "",
-      bVal = "";
     if (sortField === "name") {
-      aVal = a.name.toLowerCase();
-      bVal = b.name.toLowerCase();
-    } else if (sortField === "email") {
-      aVal = a.email.toLowerCase();
-      bVal = b.email.toLowerCase();
-    } else {
+      const aVal = a.name.toLowerCase();
+      const bVal = b.name.toLowerCase();
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
     }
-
-    if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-    if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+    if (sortField === "email") {
+      const aVal = a.email.toLowerCase();
+      const bVal = b.email.toLowerCase();
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    }
     return 0;
   });
 
@@ -243,7 +238,7 @@ function SuppliersPage() {
 
   const totalSuppliersCount = suppliers.length;
   const activeSuppliersCount = suppliers.filter((s) =>
-    products.some((p) => p.supplierId === s.id),
+    products.some((p) => Number(p.supplierId) === Number(s.id)),
   ).length;
   const unassignedSuppliersCount = totalSuppliersCount - activeSuppliersCount;
 
@@ -355,7 +350,10 @@ function SuppliersPage() {
               type="text"
               placeholder="Search suppliers by name, email, or notes..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               style={{ maxWidth: "400px" }}
             />
           </div>

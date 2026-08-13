@@ -50,13 +50,15 @@ function ProductForm({
         description: productToEdit.description || "",
         price: String(productToEdit.price ?? ""),
         quantity: String(productToEdit.quantity ?? ""),
-        supplierId: productToEdit.supplierId || "",
+        supplierId: String(productToEdit.supplierId ?? ""),
         image: productToEdit.image || "",
       };
     }
     return INITIAL_FORM_VALUES;
   });
 
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(productToEdit?.image || "");
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [submitError, setSubmitError] = useState("");
@@ -70,84 +72,16 @@ function ProductForm({
       [name]: value,
     }));
 
+    if (name === "image") {
+      setImageFile(null);
+      setImagePreview(value);
+    }
+
     setErrors((previousErrors) => ({
       ...previousErrors,
       [name]: "",
     }));
 
-    setSuccessMessage("");
-    setSubmitError("");
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    const validationErrors = validateProduct(formValues);
-
-    setErrors(validationErrors);
-    setSuccessMessage("");
-    setSubmitError("");
-
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-
-      const productPayload = {
-        name: formValues.name.trim(),
-        description: formValues.description.trim(),
-        price: Number(formValues.price),
-        quantity: Number(formValues.quantity),
-        supplierId: formValues.supplierId,
-        image: formValues.image,
-      };
-
-      if (isEditMode) {
-        const updatedProduct = await productService.update(
-          productToEdit.id,
-          productPayload,
-        );
-        if (onProductSaved) {
-          onProductSaved(updatedProduct);
-        } else if (onProductAdded) {
-          onProductAdded(updatedProduct);
-        }
-        setSuccessMessage(`"${updatedProduct.name}" was updated successfully.`);
-      } else {
-        const newProduct = await productService.add(productPayload);
-        if (onProductAdded) {
-          onProductAdded(newProduct);
-        } else if (onProductSaved) {
-          onProductSaved(newProduct);
-        }
-        setFormValues(INITIAL_FORM_VALUES);
-        setErrors({});
-        setSuccessMessage(`"${newProduct.name}" was added successfully.`);
-      }
-    } catch (error) {
-      console.error("Unable to save product:", error);
-      setSubmitError("The product could not be saved. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  function handleReset() {
-    if (isEditMode) {
-      setFormValues({
-        name: productToEdit.name || "",
-        description: productToEdit.description || "",
-        price: String(productToEdit.price ?? ""),
-        quantity: String(productToEdit.quantity ?? ""),
-        supplierId: productToEdit.supplierId || "",
-        image: productToEdit.image || "",
-      });
-    } else {
-      setFormValues(INITIAL_FORM_VALUES);
-    }
-    setErrors({});
     setSuccessMessage("");
     setSubmitError("");
   }
@@ -172,12 +106,15 @@ function ProductForm({
       return;
     }
 
+    setImageFile(file);
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target?.result;
+      setImagePreview(dataUrl);
       setFormValues((previousValues) => ({
         ...previousValues,
-        image: dataUrl,
+        image: "",
       }));
       setErrors((previousErrors) => ({
         ...previousErrors,
@@ -185,6 +122,93 @@ function ProductForm({
       }));
     };
     reader.readAsDataURL(file);
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const validationErrors = validateProduct(formValues);
+
+    // If custom image file is attached, image field is valid
+    if (imageFile) {
+      delete validationErrors.image;
+    }
+
+    setErrors(validationErrors);
+    setSuccessMessage("");
+    setSubmitError("");
+
+    if (Object.keys(validationErrors).length > 0) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const productPayload = {
+        name: formValues.name.trim(),
+        description: formValues.description.trim(),
+        price: Number(formValues.price),
+        quantity: Number(formValues.quantity),
+        supplierId: Number(formValues.supplierId),
+        image: formValues.image || "/assets/icons/box.svg",
+      };
+
+      if (isEditMode) {
+        const updatedProduct = await productService.update(
+          productToEdit.id,
+          productPayload,
+          imageFile
+        );
+        if (onProductSaved) {
+          onProductSaved(updatedProduct);
+        } else if (onProductAdded) {
+          onProductAdded(updatedProduct);
+        }
+        setSuccessMessage(`"${updatedProduct.name}" was updated successfully.`);
+      } else {
+        const newProduct = await productService.create(productPayload, imageFile);
+        if (onProductAdded) {
+          onProductAdded(newProduct);
+        } else if (onProductSaved) {
+          onProductSaved(newProduct);
+        }
+        setFormValues(INITIAL_FORM_VALUES);
+        setImageFile(null);
+        setImagePreview("");
+        setErrors({});
+        setSuccessMessage(`"${newProduct.name}" was added successfully.`);
+      }
+    } catch (error) {
+      console.error("Unable to save product:", error);
+      if (error.errors) {
+        setErrors(error.errors);
+      }
+      setSubmitError(error.message || "The product could not be saved. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleReset() {
+    if (isEditMode) {
+      setFormValues({
+        name: productToEdit.name || "",
+        description: productToEdit.description || "",
+        price: String(productToEdit.price ?? ""),
+        quantity: String(productToEdit.quantity ?? ""),
+        supplierId: String(productToEdit.supplierId ?? ""),
+        image: productToEdit.image || "",
+      });
+      setImagePreview(productToEdit.image || "");
+    } else {
+      setFormValues(INITIAL_FORM_VALUES);
+      setImagePreview("");
+    }
+    setImageFile(null);
+    setErrors({});
+    setSuccessMessage("");
+    setSubmitError("");
   }
 
   return (
@@ -385,12 +409,12 @@ function ProductForm({
         </div>
       </div>
 
-      {formValues.image && (
+      {imagePreview && (
         <div className="image-preview" style={{ marginTop: "1rem" }}>
           <p>Image preview</p>
 
           <img
-            src={formValues.image}
+            src={imagePreview}
             alt="Selected product preview"
             style={{ width: "100px", height: "100px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--border)" }}
           />

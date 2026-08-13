@@ -1,29 +1,32 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import * as authService from "../services/authService.js";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() =>
-    authService.getCurrentUser(),
+    authService.getCurrentUser()
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function initAuth() {
+      try {
+        const user = await authService.checkAuthStatus();
+        setCurrentUser(user);
+      } catch {
+        setCurrentUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    initAuth();
+  }, []);
 
   async function login(email, password) {
     setIsLoading(true);
     try {
       const user = await authService.login(email, password);
-      setCurrentUser(user);
-      return user;
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function signup(userData) {
-    setIsLoading(true);
-    try {
-      const user = await authService.signup(userData);
       setCurrentUser(user);
       return user;
     } finally {
@@ -42,7 +45,6 @@ export function AuthProvider({ children }) {
     isAdmin: currentUser?.role === "admin",
     isLoading,
     login,
-    signup,
     logout,
   };
 

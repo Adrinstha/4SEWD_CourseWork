@@ -6,7 +6,7 @@ function getStockStatus(quantity) {
     };
   }
 
-  if (quantity <= 10) {
+  if (quantity < 5) {
     return {
       label: "Low stock",
       className: "stock-status stock-status--low",
@@ -28,9 +28,10 @@ function formatPrice(price) {
 
 function ProductRow({ product, supplierName, isAdmin, onView, onEdit, onDelete }) {
   const stockStatus = getStockStatus(product.quantity);
+  const isLowStock = product.quantity < 5;
 
   return (
-    <tr>
+    <tr className={isLowStock ? "low" : ""}>
       <td>
         <div className="product-summary">
           <img

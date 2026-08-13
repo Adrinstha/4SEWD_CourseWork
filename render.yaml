@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: stockflow-backend
+    env: node
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: node src/server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        value: https://4sewd-course-work.vercel.app
+      - key: DB_STORAGE
+        value: ./storage/inventory.sqlite

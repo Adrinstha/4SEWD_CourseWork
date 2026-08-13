@@ -10,7 +10,6 @@ import ProductTable from "../components/products/ProductTable.jsx";
 import ProductToolbar from "../components/products/ProductToolbar.jsx";
 import { useAuth } from "../context/useAuth.js";
 import * as productService from "../services/productService.js";
-import { initializeDatabase } from "../services/seedService.js";
 import * as supplierService from "../services/supplierService.js";
 
 function ProductsPage() {
@@ -31,41 +30,47 @@ function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  function reloadData() {
+    setIsLoading(true);
+    setErrorMessage("");
+    Promise.all([productService.getAll(), supplierService.getAll()])
+      .then(([storedProducts, storedSuppliers]) => {
+        setProducts(storedProducts);
+        setSuppliers(storedSuppliers);
+      })
+      .catch((error) => {
+        console.error("Unable to load inventory:", error);
+        setErrorMessage(
+          "The inventory could not be loaded. Please ensure the backend server is running.",
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
   useEffect(() => {
     let ignore = false;
-
-    async function loadInventory() {
-      try {
-        setIsLoading(true);
-        setErrorMessage("");
-
-        await initializeDatabase();
-
-        const [storedProducts, storedSuppliers] = await Promise.all([
-          productService.getAll(),
-          supplierService.getAll(),
-        ]);
-
+    Promise.all([productService.getAll(), supplierService.getAll()])
+      .then(([storedProducts, storedSuppliers]) => {
         if (!ignore) {
           setProducts(storedProducts);
           setSuppliers(storedSuppliers);
         }
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Unable to load inventory:", error);
-
         if (!ignore) {
           setErrorMessage(
-            "The inventory could not be loaded. Please refresh the page and try again.",
+            "The inventory could not be loaded. Please ensure the backend server is running.",
           );
         }
-      } finally {
+      })
+      .finally(() => {
         if (!ignore) {
           setIsLoading(false);
         }
-      }
-    }
-
-    loadInventory();
+      });
 
     return () => {
       ignore = true;
@@ -75,7 +80,7 @@ function ProductsPage() {
   const normalizedSearch = searchTerm.trim().toLowerCase();
 
   const filteredProducts = products.filter((product) => {
-    const supplier = suppliers.find((item) => item.id === product.supplierId);
+    const supplier = suppliers.find((item) => Number(item.id) === Number(product.supplierId));
     const supplierName = supplier?.name ?? "";
 
     const matchesSearch =
@@ -84,7 +89,7 @@ function ProductsPage() {
       supplierName.toLowerCase().includes(normalizedSearch);
 
     const matchesSupplier =
-      selectedSupplier === "all" || product.supplierId === selectedSupplier;
+      selectedSupplier === "all" || Number(product.supplierId) === Number(selectedSupplier);
 
     return matchesSearch && matchesSupplier;
   });
@@ -113,26 +118,24 @@ function ProductsPage() {
 
     try {
       setErrorMessage("");
-      const updatedProducts = await productService.remove(productId);
-      setProducts(updatedProducts);
+      await productService.remove(productId);
+      reloadData();
     } catch (error) {
       console.error("Unable to delete product:", error);
-      setErrorMessage("The product could not be deleted. Please try again.");
+      setErrorMessage(error.message || "The product could not be deleted. Please try again.");
     }
   }
 
-  function handleProductAdded(newProduct) {
-    setProducts((previousProducts) => [...previousProducts, newProduct]);
+  function handleProductAdded() {
+    reloadData();
     setSearchTerm("");
     setSelectedSupplier("all");
     setIsFormVisible(false);
     setEditingProduct(null);
   }
 
-  function handleProductSaved(savedProduct) {
-    setProducts((previousProducts) =>
-      previousProducts.map((p) => (p.id === savedProduct.id ? savedProduct : p)),
-    );
+  function handleProductSaved() {
+    reloadData();
     setIsFormVisible(false);
     setEditingProduct(null);
   }
@@ -140,6 +143,7 @@ function ProductsPage() {
   function handleClearFilters() {
     setSearchTerm("");
     setSelectedSupplier("all");
+    setCurrentPage(1);
   }
 
   function handleOpenForm() {
@@ -165,7 +169,7 @@ function ProductsPage() {
   }
 
   function getSupplierName(supplierId) {
-    const supplier = suppliers.find((item) => item.id === supplierId);
+    const supplier = suppliers.find((item) => Number(item.id) === Number(supplierId));
     return supplier?.name ?? "Unknown supplier";
   }
 
@@ -194,8 +198,8 @@ function ProductsPage() {
       aVal = Number(a.quantity || 0);
       bVal = Number(b.quantity || 0);
     } else if (sortField === "status") {
-      aVal = a.quantity === 0 ? 0 : a.quantity <= 10 ? 1 : 2;
-      bVal = b.quantity === 0 ? 0 : b.quantity <= 10 ? 1 : 2;
+      aVal = a.quantity === 0 ? 0 : a.quantity < 5 ? 1 : 2;
+      bVal = b.quantity === 0 ? 0 : b.quantity < 5 ? 1 : 2;
     } else {
       return 0;
     }
@@ -281,9 +285,9 @@ function ProductsPage() {
     0,
   );
   const lowStockCount = products.filter(
-    (p) => p.quantity > 0 && p.quantity <= 10,
+    (p) => p.quantity > 0 && p.quantity < 5,
   ).length;
-  const outOfStockCount = products.filter((p) => p.quantity === 0).length;
+  const outOfStockCount = products.filter((p) => Number(p.quantity) === 0).length;
 
   const formattedTotalValue = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -333,7 +337,7 @@ function ProductsPage() {
           <KpiCard
             title="Low Stock Warning"
             value={lowStockCount}
-            subtitle="Items with ≤ 10 units"
+            subtitle="Items with < 5 units"
             variant="warning"
           />
           <KpiCard
@@ -405,8 +409,14 @@ function ProductsPage() {
             suppliers={suppliers}
             searchTerm={searchTerm}
             selectedSupplier={selectedSupplier}
-            onSearchChange={setSearchTerm}
-            onSupplierChange={setSelectedSupplier}
+            onSearchChange={(val) => {
+              setSearchTerm(val);
+              setCurrentPage(1);
+            }}
+            onSupplierChange={(val) => {
+              setSelectedSupplier(val);
+              setCurrentPage(1);
+            }}
           />
 
           {renderInventoryContent()}

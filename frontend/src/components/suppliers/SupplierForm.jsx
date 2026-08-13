@@ -80,7 +80,7 @@ function SupplierForm({
         );
         setSuccessMessage(`"${savedSupplier.name}" updated successfully.`);
       } else {
-        savedSupplier = await supplierService.add(payload);
+        savedSupplier = await supplierService.create(payload);
         setFormValues(INITIAL_FORM_VALUES);
         setSuccessMessage(`"${savedSupplier.name}" added successfully.`);
       }

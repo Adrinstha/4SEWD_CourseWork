@@ -32,7 +32,7 @@ export function validatePassword(password) {
     {
       id: "special",
       text: "At least one special character (!@#$%^&*...)",
-      isMet: /[!@#$%^&*(),.?":{}|<>\-_+=\\/\[\]~`]/.test(password),
+      isMet: /[!@#$%^&*(),.?":{}|<>\-_+=\\/[\]~`]/.test(password),
     },
   ];
 
