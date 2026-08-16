@@ -1,45 +1,53 @@
-# StockFlow Inventory Management System
+# StockFlow — Inventory Management System
 
-StockFlow is a full-stack web application built for managing product inventory, suppliers, and administrative workflows. It features a React 19 + Vite frontend and a Node.js + Express REST API backed by a SQLite database managed through Sequelize ORM with JWT authentication and Multer file uploads.
-
----
-
-## 🌟 Architecture & Features
-
-### Backend (`/server`)
-- **Node.js & Express**: Modular RESTful API structure (`routes/`, `controllers/`, `models/`, `middleware/`, `validators/`).
-- **Sequelize ORM & SQLite**: Code-first relational database schema (`Users`, `Suppliers`, `Products`) with enforced foreign keys (`Products.supplierId → Suppliers.id`).
-- **JWT Authentication & Passwords**: Passwords hashed with `bcryptjs`. Endpoints protected with JWT bearer token middleware (`authenticateToken`, `requireAdmin`).
-- **Validation**: Server-side validation via `express-validator` ensuring data integrity regardless of client input.
-- **File Uploads**: `Multer` middleware for uploading custom product images saved to `server/storage/uploads/`.
-- **Foreign Key Constraints**: Deleting a supplier with linked active products returns HTTP 409 Conflict.
-
-### Frontend (`/frontend`)
-- **React 19 + Vite**: Responsive client interface built with modern vanilla CSS and full accessible components.
-- **REST Service Layer**: Centralized `apiClient.js` handling JWT authorization headers and error propagation.
-- **Low-Stock Alerting**: Red row highlighting (`tr.low`) and badge indicator for items with `< 5` units in stock.
-- **Filtering & Search**: Real-time multi-attribute search, supplier dropdown filtering, sorting, and responsive table pagination.
+A full-stack CRUD web application for managing products and suppliers with JWT authentication, role-based access control, and image uploads.
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Tech Stack
 
-### Prerequisites
-- Node.js (v18+)
-- npm (v9+)
+- **Backend**: Node.js, Express, Sequelize ORM, SQLite, Multer, JWT, bcryptjs, express-validator
+- **Frontend**: React 19, Vite, React Router v7, Vanilla CSS
+
+---
+
+## ✨ Features
+
+- **CRUD Operations**: Full management of Products and Suppliers with foreign key associations.
+- **Authentication**: JWT-based login with hashed passwords (`bcrypt`) and protected routes.
+- **Role-Based Access**: `admin` (Full CRUD) and `user` (Read-only).
+- **Validation**: Client-side feedback + server-side validation via `express-validator`.
+- **Low-Stock Alerts**: Visual red highlighting and warning badges for items with `< 5` units.
+- **Search & Filters**: Real-time search and supplier filtering.
+- **Image Uploads**: Multipart file uploads from local device via Multer.
+- **Responsive UI**: Optimized for mobile, tablet, and desktop viewports.
+
+---
+
+## 🔑 Default Credentials
+
+| Role | Username / Email | Password | Access Rights |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@stockflow.com` (or `admin`) | `Admin123!` | Full CRUD access |
+| **Admin (Personal)** | `adrinshrestha16@gmail.com` (or `adrin`) | `admin123` | Full CRUD access |
+| **Standard User** | `user@stockflow.com` (or `user`) | `User123!` | Read-only access |
+
+---
+
+## 🚀 Quick Start
 
 ### 1. Server Setup
 ```bash
 cd server
 npm install
-npm run seed  # Synchronizes database models and seeds initial data
-npm start     # Starts Express API server on http://localhost:5000
+npm run seed   # Synchronizes SQLite database and seeds default data
+npm start      # Runs on http://localhost:5000
 ```
 
-#### Environment Variables (`server/.env`)
+**Environment Variables (`server/.env`)**:
 ```env
 PORT=5000
-JWT_SECRET=your_secure_secret_here
+JWT_SECRET=your_jwt_secret_key
 CLIENT_ORIGIN=http://localhost:5173
 DB_STORAGE=./storage/inventory.sqlite
 ```
@@ -50,38 +58,33 @@ DB_STORAGE=./storage/inventory.sqlite
 ```bash
 cd frontend
 npm install
-npm run dev   # Starts Vite dev server on http://localhost:5173
+npm run dev    # Runs on http://localhost:5173
 ```
 
-#### Environment Variables (`frontend/.env`)
+**Environment Variables (`frontend/.env`)**:
 ```env
+# Local Development:
 VITE_API_URL=http://localhost:5000
+
+# Deployed Render Backend:
+# VITE_API_URL=https://foursewd-coursework-ses1.onrender.com
 ```
 
 ---
 
-## 🔑 Default Credentials
+## 📡 API Endpoints
 
-| Role | Username / Email | Password | Access Rights |
+| Method | Endpoint | Auth | Description |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@stockflow.com` | `Admin123!` | Full CRUD operations for Products & Suppliers |
-| **Standard User** | `user@stockflow.com` | `User123!` | Read-only view for Products & Suppliers |
-
----
-
-## 📡 API Endpoints Summary
-
-| Method | Endpoint | Description | Auth Required |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/login` | Authenticate user & issue JWT | Public |
-| `GET` | `/api/auth/me` | Validate JWT session | Bearer Token |
-| `GET` | `/api/products` | List all products (with supplier object) | Bearer Token |
-| `GET` | `/api/products/:id` | Get single product detail | Bearer Token |
-| `POST` | `/api/products` | Create product (multipart `FormData` image) | Admin Token |
-| `PUT` | `/api/products/:id` | Update product | Admin Token |
-| `DELETE`| `/api/products/:id` | Delete product | Admin Token |
-| `GET` | `/api/suppliers` | List all suppliers | Bearer Token |
-| `GET` | `/api/suppliers/:id` | Get single supplier detail | Bearer Token |
-| `POST` | `/api/suppliers` | Create supplier | Admin Token |
-| `PUT` | `/api/suppliers/:id` | Update supplier | Admin Token |
-| `DELETE`| `/api/suppliers/:id` | Delete supplier (409 if products linked) | Admin Token |
+| `POST` | `/api/auth/login` | Public | Login and receive JWT token |
+| `GET` | `/api/auth/me` | User | Get current session user |
+| `GET` | `/api/products` | User | List all products with supplier info |
+| `GET` | `/api/products/:id` | User | Get product by ID |
+| `POST` | `/api/products` | Admin | Create product (multipart file upload) |
+| `PUT` | `/api/products/:id` | Admin | Update product |
+| `DELETE`| `/api/products/:id` | Admin | Delete product |
+| `GET` | `/api/suppliers` | User | List all suppliers |
+| `GET` | `/api/suppliers/:id` | User | Get supplier by ID |
+| `POST` | `/api/suppliers` | Admin | Create supplier |
+| `PUT` | `/api/suppliers/:id` | Admin | Update supplier |
+| `DELETE`| `/api/suppliers/:id` | Admin | Delete supplier (blocked if products linked) |

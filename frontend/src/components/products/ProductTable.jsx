@@ -11,8 +11,13 @@ function ProductTable({
   onEdit,
   onDelete,
 }) {
-  function getSupplierName(supplierId) {
-    const supplier = suppliers.find((item) => item.id === supplierId);
+  function getSupplierName(product) {
+    if (product.supplier?.name) {
+      return product.supplier.name;
+    }
+    const supplier = suppliers.find(
+      (item) => Number(item.id) === Number(product.supplierId)
+    );
     return supplier?.name ?? "Unknown supplier";
   }
 
@@ -63,7 +68,7 @@ function ProductTable({
             <ProductRow
               key={product.id}
               product={product}
-              supplierName={getSupplierName(product.supplierId)}
+              supplierName={getSupplierName(product)}
               isAdmin={isAdmin}
               onView={onView}
               onEdit={onEdit}

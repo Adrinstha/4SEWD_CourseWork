@@ -14,8 +14,8 @@ export async function seedDatabase() {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
-  await sequelize.sync();
-  console.log("Database synchronized.");
+  await sequelize.sync({ force: true });
+  console.log("Database synchronized (tables reset).");
 
   // Seed Users
   const adminPasswordHash = await bcrypt.hash("Admin123!", 10);

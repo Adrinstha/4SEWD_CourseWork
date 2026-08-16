@@ -6,7 +6,7 @@ function getStockStatus(quantity) {
     };
   }
 
-  if (quantity <= 10) {
+  if (quantity < 5) {
     return {
       label: "Low stock",
       className: "stock-status stock-status--low",
