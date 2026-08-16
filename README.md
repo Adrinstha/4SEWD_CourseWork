@@ -39,7 +39,7 @@ npm start     # Starts Express API server on http://localhost:5000
 #### Environment Variables (`server/.env`)
 ```env
 PORT=5000
-JWT_SECRET=stockflow_super_secret_jwt_key_2026_coursework
+JWT_SECRET=your_secure_secret_here
 CLIENT_ORIGIN=http://localhost:5173
 DB_STORAGE=./storage/inventory.sqlite
 ```
@@ -75,13 +75,13 @@ VITE_API_URL=http://localhost:5000
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/auth/login` | Authenticate user & issue JWT | Public |
 | `GET` | `/api/auth/me` | Validate JWT session | Bearer Token |
-| `GET` | `/api/products` | List all products (with supplier object) | Public |
-| `GET` | `/api/products/:id` | Get single product detail | Public |
+| `GET` | `/api/products` | List all products (with supplier object) | Bearer Token |
+| `GET` | `/api/products/:id` | Get single product detail | Bearer Token |
 | `POST` | `/api/products` | Create product (multipart `FormData` image) | Admin Token |
 | `PUT` | `/api/products/:id` | Update product | Admin Token |
 | `DELETE`| `/api/products/:id` | Delete product | Admin Token |
-| `GET` | `/api/suppliers` | List all suppliers | Public |
-| `GET` | `/api/suppliers/:id` | Get single supplier detail | Public |
+| `GET` | `/api/suppliers` | List all suppliers | Bearer Token |
+| `GET` | `/api/suppliers/:id` | Get single supplier detail | Bearer Token |
 | `POST` | `/api/suppliers` | Create supplier | Admin Token |
 | `PUT` | `/api/suppliers/:id` | Update supplier | Admin Token |
 | `DELETE`| `/api/suppliers/:id` | Delete supplier (409 if products linked) | Admin Token |

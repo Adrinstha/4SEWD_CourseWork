@@ -28,60 +28,38 @@ export async function getById(id) {
 }
 
 export async function create(productData, imageFile = null) {
-  let body;
+  const formData = new FormData();
+  formData.append("name", productData.name);
+  formData.append("description", productData.description);
+  formData.append("price", productData.price);
+  formData.append("quantity", productData.quantity);
+  formData.append("supplierId", productData.supplierId);
   if (imageFile instanceof File) {
-    const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("description", productData.description);
-    formData.append("price", productData.price);
-    formData.append("quantity", productData.quantity);
-    formData.append("supplierId", productData.supplierId);
     formData.append("image", imageFile);
-    body = formData;
-  } else {
-    body = {
-      name: productData.name,
-      description: productData.description,
-      price: productData.price,
-      quantity: productData.quantity,
-      supplierId: productData.supplierId,
-      image: productData.image || "/assets/icons/box.svg",
-    };
   }
 
   const created = await apiClient("/api/products", {
     method: "POST",
-    body,
+    body: formData,
   });
 
   return normalizeProduct(created);
 }
 
 export async function update(id, productData, imageFile = null) {
-  let body;
+  const formData = new FormData();
+  formData.append("name", productData.name);
+  formData.append("description", productData.description);
+  formData.append("price", productData.price);
+  formData.append("quantity", productData.quantity);
+  formData.append("supplierId", productData.supplierId);
   if (imageFile instanceof File) {
-    const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("description", productData.description);
-    formData.append("price", productData.price);
-    formData.append("quantity", productData.quantity);
-    formData.append("supplierId", productData.supplierId);
     formData.append("image", imageFile);
-    body = formData;
-  } else {
-    body = {
-      name: productData.name,
-      description: productData.description,
-      price: productData.price,
-      quantity: productData.quantity,
-      supplierId: productData.supplierId,
-      image: productData.image || "/assets/icons/box.svg",
-    };
   }
 
   const updated = await apiClient(`/api/products/${id}`, {
     method: "PUT",
-    body,
+    body: formData,
   });
 
   return normalizeProduct(updated);

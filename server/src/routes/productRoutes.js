@@ -13,8 +13,8 @@ import { validateProduct } from "../validators/productValidator.js";
 
 const router = express.Router();
 
-router.get("/", getAllProducts);
-router.get("/:id", getProductById);
+router.get("/", authenticateToken, getAllProducts);
+router.get("/:id", authenticateToken, getProductById);
 
 router.post(
   "/",

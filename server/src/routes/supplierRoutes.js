@@ -12,8 +12,8 @@ import { validateSupplier } from "../validators/supplierValidator.js";
 
 const router = express.Router();
 
-router.get("/", getAllSuppliers);
-router.get("/:id", getSupplierById);
+router.get("/", authenticateToken, getAllSuppliers);
+router.get("/:id", authenticateToken, getSupplierById);
 
 router.post(
   "/",

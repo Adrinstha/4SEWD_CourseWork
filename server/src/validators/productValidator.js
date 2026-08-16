@@ -12,8 +12,8 @@ export const validateProduct = [
     .trim()
     .notEmpty()
     .withMessage("Description is required.")
-    .isLength({ min: 5 })
-    .withMessage("Description must be at least 5 characters long."),
+    .isLength({ min: 10 })
+    .withMessage("Description must be at least 10 characters long."),
 
   body("price")
     .notEmpty()

@@ -46,14 +46,16 @@ export async function createProduct(req, res, next) {
   try {
     const { name, description, price, quantity, supplierId } = req.body;
 
-    let imagePath = "";
-    if (req.file) {
-      imagePath = `/uploads/${req.file.filename}`;
-    } else if (req.body.image) {
-      imagePath = req.body.image;
-    } else {
-      imagePath = "/assets/icons/box.svg";
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Validation failed.",
+        errors: {
+          image: "A product image file is required.",
+        },
+      });
     }
+
+    const imagePath = `/uploads/${req.file.filename}`;
 
     // Verify supplier exists
     const supplier = await Supplier.findByPk(supplierId);
@@ -112,14 +114,12 @@ export async function updateProduct(req, res, next) {
     let imagePath = product.image;
     if (req.file) {
       imagePath = `/uploads/${req.file.filename}`;
-    } else if (req.body.image) {
-      imagePath = req.body.image;
     }
 
     await product.update({
       name: name ?? product.name,
       description: description ?? product.description,
-      price: price ? parseFloat(price) : product.price,
+      price: price !== undefined ? parseFloat(price) : product.price,
       quantity: quantity !== undefined ? parseInt(quantity, 10) : product.quantity,
       image: imagePath,
       supplierId: supplierId ? parseInt(supplierId, 10) : product.supplierId,

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -8,17 +9,21 @@ import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
-// Enable CORS for Vercel deployment and local development
 const allowedOrigin = process.env.CLIENT_ORIGIN || "*";
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or same-origin)
-      if (!origin || allowedOrigin === "*" || origin === allowedOrigin || origin.endsWith(".vercel.app")) {
+      if (
+        !origin ||
+        allowedOrigin === "*" ||
+        origin === allowedOrigin
+      ) {
         return callback(null, true);
       }
-      return callback(null, true);
+      return callback(
+        new Error("Origin not allowed by CORS.")
+      );
     },
     credentials: true,
   })

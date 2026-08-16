@@ -12,11 +12,11 @@ export function getCurrentUser() {
   }
 }
 
-export async function login(email, password) {
+export async function login(identifier, password) {
   try {
     const data = await apiClient("/api/auth/login", {
       method: "POST",
-      body: { email, password },
+      body: { email: identifier, username: identifier, password },
     });
 
     if (data.token) {

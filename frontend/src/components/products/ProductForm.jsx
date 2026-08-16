@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import * as productService from "../../services/productService.js";
 import { validateProduct } from "../../utils/productValidation.js";
 
@@ -8,31 +8,7 @@ const INITIAL_FORM_VALUES = {
   price: "",
   quantity: "",
   supplierId: "",
-  image: "",
 };
-
-const PRODUCT_IMAGES = [
-  {
-    value: "/assets/laptop.svg",
-    label: "Laptop",
-  },
-  {
-    value: "/assets/mouse.svg",
-    label: "Mouse",
-  },
-  {
-    value: "/assets/keyboard.svg",
-    label: "Keyboard",
-  },
-  {
-    value: "/assets/headset.svg",
-    label: "Headset",
-  },
-  {
-    value: "/assets/phone.svg",
-    label: "Phone",
-  },
-];
 
 function ProductForm({
   suppliers,
@@ -42,6 +18,7 @@ function ProductForm({
   onCancel,
 }) {
   const isEditMode = Boolean(productToEdit);
+  const fileInputRef = useRef(null);
 
   const [formValues, setFormValues] = useState(() => {
     if (productToEdit) {
@@ -51,7 +28,6 @@ function ProductForm({
         price: String(productToEdit.price ?? ""),
         quantity: String(productToEdit.quantity ?? ""),
         supplierId: String(productToEdit.supplierId ?? ""),
-        image: productToEdit.image || "",
       };
     }
     return INITIAL_FORM_VALUES;
@@ -71,11 +47,6 @@ function ProductForm({
       ...previousValues,
       [name]: value,
     }));
-
-    if (name === "image") {
-      setImageFile(null);
-      setImagePreview(value);
-    }
 
     setErrors((previousErrors) => ({
       ...previousErrors,
@@ -112,10 +83,6 @@ function ProductForm({
     reader.onload = (e) => {
       const dataUrl = e.target?.result;
       setImagePreview(dataUrl);
-      setFormValues((previousValues) => ({
-        ...previousValues,
-        image: "",
-      }));
       setErrors((previousErrors) => ({
         ...previousErrors,
         image: "",
@@ -127,12 +94,7 @@ function ProductForm({
   async function handleSubmit(event) {
     event.preventDefault();
 
-    const validationErrors = validateProduct(formValues);
-
-    // If custom image file is attached, image field is valid
-    if (imageFile) {
-      delete validationErrors.image;
-    }
+    const validationErrors = validateProduct(formValues, isEditMode, Boolean(imageFile));
 
     setErrors(validationErrors);
     setSuccessMessage("");
@@ -151,7 +113,6 @@ function ProductForm({
         price: Number(formValues.price),
         quantity: Number(formValues.quantity),
         supplierId: Number(formValues.supplierId),
-        image: formValues.image || "/assets/icons/box.svg",
       };
 
       if (isEditMode) {
@@ -176,6 +137,9 @@ function ProductForm({
         setFormValues(INITIAL_FORM_VALUES);
         setImageFile(null);
         setImagePreview("");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
         setErrors({});
         setSuccessMessage(`"${newProduct.name}" was added successfully.`);
       }
@@ -198,7 +162,6 @@ function ProductForm({
         price: String(productToEdit.price ?? ""),
         quantity: String(productToEdit.quantity ?? ""),
         supplierId: String(productToEdit.supplierId ?? ""),
-        image: productToEdit.image || "",
       });
       setImagePreview(productToEdit.image || "");
     } else {
@@ -206,6 +169,9 @@ function ProductForm({
       setImagePreview("");
     }
     setImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     setErrors({});
     setSuccessMessage("");
     setSubmitError("");
@@ -363,43 +329,27 @@ function ProductForm({
         </div>
 
         <div className="form-group form-grid__full">
-          <label>
-            Product Image <span aria-hidden="true">*</span>
+          <label htmlFor="product-image-file">
+            Product image
+            {!isEditMode && <span aria-hidden="true"> *</span>}
           </label>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
-            <div>
-              <label htmlFor="product-image-select" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "4px", display: "block" }}>
-                Choose preset icon:
-              </label>
-              <select
-                id="product-image-select"
-                name="image"
-                value={PRODUCT_IMAGES.some((img) => img.value === formValues.image) ? formValues.image : ""}
-                onChange={handleChange}
-              >
-                <option value="">Select preset image</option>
-                {PRODUCT_IMAGES.map((image) => (
-                  <option key={image.value} value={image.value}>
-                    {image.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <input
+            id="product-image-file"
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            aria-invalid={Boolean(errors.image)}
+            aria-describedby={errors.image ? "product-image-error" : undefined}
+            onChange={handleFileUpload}
+            style={{ padding: "8px 12px", minHeight: "44px" }}
+          />
 
-            <div>
-              <label htmlFor="product-image-file" style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "4px", display: "block" }}>
-                Or upload custom file:
-              </label>
-              <input
-                id="product-image-file"
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                style={{ padding: "6px 10px", minHeight: "44px" }}
-              />
-            </div>
-          </div>
+          <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: "4px" }}>
+            {isEditMode
+              ? "Upload a new image from your device to replace current image (optional, PNG/JPG/SVG/WebP up to 2MB)."
+              : "Upload an image file from your device (PNG, JPG, SVG, WebP up to 2MB)."}
+          </p>
 
           {errors.image && (
             <p className="field-error" id="product-image-error">
@@ -411,11 +361,13 @@ function ProductForm({
 
       {imagePreview && (
         <div className="image-preview" style={{ marginTop: "1rem" }}>
-          <p>Image preview</p>
+          <p style={{ fontSize: "0.875rem", fontWeight: "600", marginBottom: "0.5rem" }}>
+            {imageFile ? "New image preview" : "Current product image"}
+          </p>
 
           <img
             src={imagePreview}
-            alt="Selected product preview"
+            alt="Product preview"
             style={{ width: "100px", height: "100px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--border)" }}
           />
         </div>

@@ -90,7 +90,10 @@ function SupplierForm({
       }
     } catch (error) {
       console.error("Unable to save supplier:", error);
-      setSubmitError("Failed to save supplier. Please try again.");
+      if (error.errors) {
+        setErrors(error.errors);
+      }
+      setSubmitError(error.message || "The supplier could not be saved. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -167,6 +170,7 @@ function SupplierForm({
             placeholder="+977 1 555 0101"
             onChange={handleChange}
           />
+          {errors.phone && <p className="field-error">{errors.phone}</p>}
         </div>
 
         <div className="form-group form-grid__full">
@@ -179,6 +183,7 @@ function SupplierForm({
             placeholder="Additional notes about supplier products or terms..."
             onChange={handleChange}
           />
+          {errors.notes && <p className="field-error">{errors.notes}</p>}
         </div>
       </div>
 

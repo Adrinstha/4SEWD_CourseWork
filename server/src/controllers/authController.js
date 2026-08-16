@@ -3,17 +3,22 @@ import jwt from "jsonwebtoken";
 import { Op } from "sequelize";
 import User from "../models/User.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "stockflow_super_secret_jwt_key_2026_coursework";
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required.");
+}
 
 export async function login(req, res, next) {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
+    const rawIdentifier = email || username || "";
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email/Username and password are required." });
+    if (!rawIdentifier.trim() || !password) {
+      return res.status(400).json({ message: "Username/email and password are required." });
     }
 
-    const normalizedIdentifier = email.trim().toLowerCase();
+    const normalizedIdentifier = rawIdentifier.trim().toLowerCase();
 
     // Support logging in by either email or username
     const foundUser = await User.findOne({

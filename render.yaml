@@ -15,7 +15,7 @@ services:
         generateValue: true
 
       - key: CLIENT_ORIGIN
-        value: https://4sewd-course-work.vercel.app
+        value: https://foursewd-coursework-front.onrender.com
 
       - key: DB_STORAGE
         value: ./storage/inventory.sqlite
